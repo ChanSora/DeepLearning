@@ -1,0 +1,3 @@
+[submodule "makemore"]
+	path = makemore
+	url = https://github.com/karpathy/makemore.git
