@@ -3,6 +3,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import math
 import random
+import time
 # %matplotlib inline
 
 class Tanh:
@@ -94,7 +95,7 @@ class Sequential:
                 if isinstance(layer, Linear):
                     layer.weight *= 5/3
 
-    def __call__(self, x):
+    def forward(self, x):
         self.out = x
         for layer in self.layers:
             self.out = layer(self.out)
@@ -201,7 +202,7 @@ def main():
     n_hidden = 100
     torch.manual_seed(42)
 
-    mlp = Sequential([
+    model = Sequential([
             Embedding(vocab_size, n_embedded),
             Flatten(),
             Linear(block_size * n_embedded, n_hidden, True), BatchNorm1d(n_hidden), 
@@ -229,14 +230,14 @@ def main():
     batch_size = 32
     max_steps = 100000
     lr = 0.1
-    lossi = []
 
+    start = time.time()
     for i in range(0, max_steps):
         # forward pass
         idx = torch.randint(0, Xtr.shape[0], (batch_size, ))
         x = Xtr[idx]
 
-        logits = mlp(x)
+        logits = model.forward(x)
 
         loss = F.cross_entropy(logits, Ytr[idx])
         
@@ -244,22 +245,20 @@ def main():
             print(loss.item())
 
         # backward pass
-        for layer in mlp.layers:
+        for layer in model.layers:
             layer.out.retain_grad()
-        for p in mlp.parameters():
+        for p in model.parameters():
             p.grad = None 
         loss.backward()
 
         if (i == max_steps - 1):
-            plot_distributions(mlp.layers, max_steps)
+            plot_distributions(model.layers, max_steps)
         with torch.no_grad():
-            for p in mlp.parameters():
+            for p in model.parameters():
                 p.data += -lr * p.grad
 
-        lossi.append(loss.log10().item())
-
-    # plt.plot(lossi)
-    # plt.show()    
+    end = time.time()
+    print(f"Training time: {end - start:.4f} seconds")
 
     split = {
             'train' : (Xtr, Ytr),
@@ -268,12 +267,12 @@ def main():
         }
 
     with torch.no_grad():
-        emb = mlp(Xtr)
+        emb = model.forward(Xtr)
         dev_loss = F.cross_entropy(emb, Ytr)
         print(f"train loss: {dev_loss.item():.4f}")
 
     with torch.no_grad():
-        emb = mlp(Xdev)
+        emb = model.forward(Xdev)
         dev_loss = F.cross_entropy(emb, Ydev)
         print(f"dev loss: {dev_loss.item():.4f}")
 
