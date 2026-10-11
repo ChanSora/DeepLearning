@@ -284,13 +284,13 @@ def main():
         }
 
     with torch.no_grad():
-        emb = model(Xtr)
-        dev_loss = F.cross_entropy(emb, Ytr)
-        print(f"train loss: {dev_loss.item():.4f}")
+        logits = model.forward(Xtr)
+        train_loss = F.cross_entropy(logits, Ytr)
+        print(f"train loss: {train_loss.item():.4f}")
 
     with torch.no_grad():
-        emb = model.forward(Xdev)
-        dev_loss = F.cross_entropy(emb, Ydev)
+        logits = model.forward(Xdev)
+        dev_loss = F.cross_entropy(logits, Ydev)
         print(f"dev loss: {dev_loss.item():.4f}")
 
 if __name__ == "__main__":
