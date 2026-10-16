@@ -1,3 +1,6 @@
 [submodule "makemore"]
 	path = makemore
 	url = https://github.com/karpathy/makemore.git
+[submodule "nanogpt"]
+	path = nanogpt
+	url = https://github.com/karpathy/nanogpt.git
