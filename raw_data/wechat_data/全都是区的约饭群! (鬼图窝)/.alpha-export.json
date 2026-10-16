@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "account_id": "aa75ecdf-d9a7-4f4d-9cc2-f3d7461d2f18",
+  "conversation_id": "47913614338@chatroom",
+  "formats": {
+    "txt": {
+      "document": "全都是区的约饭群! (鬼图窝).txt",
+      "size": 3631962,
+      "sha256": "81da0a86cd1a20c1e21def7b9c8a032c34c2d21a73f9c751b0c10bfb1e698058",
+      "manifest": "",
+      "fingerprint": "258ff71908d90ba4eb93f016820a5ad7edc2458e0626110afc95fd77551fd543",
+      "message_total": 80600,
+      "last_message_unix_ms": 1792156141000,
+      "exported_at_unix_ms": 1792156900985
+    }
+  }
+}

@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 
 # hyperparameters
 batch_size = 32
-block_size = 128
-n_embd = 128
+block_size = 1024
+n_embd = 256
 n_layer = 4
-max_steps = 5000
+max_steps = 1000
 eval_iter = 500
-learning_rate = 1e-3
+learning_rate = 3e-5
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = 'mps' if torch.mps.is_available() else 'cpu'
 # ===============
@@ -21,9 +21,10 @@ torch.manual_seed(1337)
 
 # === manage data ===
 
-words = list(open('input.txt', 'r').read())
+words = list(open('raw_data/raw_data_chansora.txt', 'r').read())
 charset = sorted(set(words))
 vocab_size = len(charset)
+print(vocab_size)
 
 stoi = {char:idx for idx, char in enumerate(charset)}
 itos = {idx:char for idx, char in enumerate(charset)}
@@ -155,6 +156,7 @@ class BigramLanguageModel(nn.Module):
 
 model = BigramLanguageModel()
 model.to(device)
+
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,
                                               start_factor=1, 
@@ -179,3 +181,5 @@ for steps in range(max_steps):
 print(loss.item())
 
 print(decode(model.generate(torch.zeros((1, 1), dtype=int, device=device), max_tokens=500)[0].tolist()))
+
+torch.save(model, "nanogpt_chansora.pth")
