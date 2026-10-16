@@ -2,16 +2,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
+
 # %matplotlib inline
 
 # hyperparameters
-batch_size = 64
-block_size = 256
+batch_size = 32
+block_size = 128
 n_embd = 128
 n_layer = 4
 max_steps = 5000
 eval_iter = 500
-learning_rate = 3e-4
+learning_rate = 1e-3
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = 'mps' if torch.mps.is_available() else 'cpu'
 # ===============
@@ -154,13 +155,15 @@ class BigramLanguageModel(nn.Module):
 
 model = BigramLanguageModel()
 model.to(device)
-
-# logits, loss = model(xb, yb)
-# print(logits.shape, loss)
-
-print(decode(model.generate(torch.zeros((1, 1), dtype=int, device=device), max_tokens=100)[0].tolist()))
-
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,
+                                              start_factor=1, 
+                                              end_factor=0.3,
+                                              total_iters=int(0.7 * max_steps)
+                                              )
+# print(decode(model.generate(torch.zeros((1, 1), dtype=int, device=device), max_tokens=100)[0].tolist()))
+n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print(f"Total number of trainable parameters: {n_params}.")
 
 for steps in range(max_steps):
     xb, yb = get_batch('train')
@@ -168,10 +171,11 @@ for steps in range(max_steps):
     optimizer.zero_grad(set_to_none=True)
     loss.backward()
     optimizer.step()
-    if (steps % eval_iter == 0):
+    scheduler.step()
+    if (steps % eval_iter == 0 or steps == max_steps - 1):
         losses = estimate_loss()
         print(f"in the {steps} steps, train loss:{losses['train']:.4f}, eval loss:{losses['eval']:.4f}")
-
+        print(f"learning rate: {scheduler.get_last_lr()[0]:.4f}")
 print(loss.item())
 
 print(decode(model.generate(torch.zeros((1, 1), dtype=int, device=device), max_tokens=500)[0].tolist()))
