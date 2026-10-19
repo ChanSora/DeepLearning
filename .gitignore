@@ -2,3 +2,7 @@ Chinese-Names-Corpus/
 pytorch/
 .ipynb_checkpoints/
 .vscode/
+bert/
+__pycache__/
+*.pth
+*.zip

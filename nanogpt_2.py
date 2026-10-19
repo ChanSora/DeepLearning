@@ -9,19 +9,19 @@ import matplotlib.pyplot as plt
 batch_size = 32
 block_size = 1024
 n_embd = 256
-n_layer = 4
-max_steps = 1000
-eval_iter = 500
-learning_rate = 3e-5
+n_layer = 2
+max_steps = 3000
+eval_iter = 100
+learning_rate = 1e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-device = 'mps' if torch.mps.is_available() else 'cpu'
+# device = 'mps' if torch.mps.is_available() else 'cpu'
 # ===============
 
 torch.manual_seed(1337)
 
 # === manage data ===
 
-words = list(open('raw_data/raw_data_chansora.txt', 'r').read())
+words = list(open('raw_data/chansora_messages.txt', 'r').read())
 charset = sorted(set(words))
 vocab_size = len(charset)
 print(vocab_size)
@@ -160,7 +160,7 @@ model.to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,
                                               start_factor=1, 
-                                              end_factor=0.3,
+                                              end_factor=0.5,
                                               total_iters=int(0.7 * max_steps)
                                               )
 # print(decode(model.generate(torch.zeros((1, 1), dtype=int, device=device), max_tokens=100)[0].tolist()))

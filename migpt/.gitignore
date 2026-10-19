@@ -1,0 +1,7 @@
+__pycache__
+*.json
+*.pth
+*.txt
+raw_data
+webtext_cache
+checkpoints

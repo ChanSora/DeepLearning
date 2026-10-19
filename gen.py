@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.functional as F
 import random
 
-from nanogpt_2_model import *
+from migpt.model import *
 
-url = '/Users/chansora/fun/wechat_data/Les.txt'
+url = '/Users/chansora/fun//Les.txt'
 
 words = list(open(url, 'r').read())
 charset = sorted(set(words))
